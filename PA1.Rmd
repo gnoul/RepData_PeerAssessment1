@@ -16,9 +16,7 @@ activ <- read.csv("activity.csv")
 2. Process the date
 ```{r echo = TRUE}
 activ$date <- as.Date(activ$date,"%Y-%m-%d")
-#summary(activ)
 activ.stepsums <- aggregate(steps~date, data=activ, na.rm=TRUE, FUN=sum)
-#summary(stepsums)
 ```
 
 ## What is mean total number of steps taken per day?
@@ -47,7 +45,8 @@ main="Average number of Steps Taken at different Intervals")
 ```
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-The `r activ.stepmean[which.max(activ.stepmean$steps),]$interval` contains the maximum number of steps.
+
+The `r activ.stepmean[which.max(activ.stepmean$steps),]$interval` interval contains the maximum number of steps.
 
 ## Imputing missing values
 
@@ -63,10 +62,9 @@ I want to fill NA'values by mean step numper of current day
 3.Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r echo = TRUE}
 step_day_mean <- aggregate(steps~date,data=activ,mean,na.action = na.pass)
-#step_day_mean$steps[is.na(step_day_mean$steps)] <- 0
 step_day_mean$steps <- as.integer(step_day_mean$steps)
-
 activ_imp <- merge(activ, step_day_mean, by="date")
+step_day_mean <-NULL
 activ_imp$steps.x[is.na(activ_imp$steps.x)] <- activ_imp$steps.y[is.na(activ_imp$steps.x)]
 activ_imp$steps.y<-NULL
 activ_imp <- activ_imp[c(2, 1, 3)]
@@ -90,13 +88,14 @@ The __MEDIAN__ total number of steps in improved dataset is `r median(activ_imp.
 As we can see, there are no significant changes between original and improved datasets.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Process dataset
 ```{r echo = TRUE}
 activ_imp$days <- weekdays(as.Date(activ_imp$date), TRUE)
 activ_imp$day_t <- ifelse(activ_imp$days == "Sat" | activ_imp$days == "Sun", "Weekend", "Weekday")
 activ_imp.stepmean <- aggregate(steps~interval+day_t,data=activ_imp,FUN=mean,na.rm=TRUE)
 ```
 
-## Loading required package: lattice and create plot.
+Loading required package: lattice and create plot.
 
 ```{r echo = TRUE}
 library(lattice)

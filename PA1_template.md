@@ -10,9 +10,7 @@ activ <- read.csv("activity.csv")
 
 ```r
 activ$date <- as.Date(activ$date,"%Y-%m-%d")
-#summary(activ)
 activ.stepsums <- aggregate(steps~date, data=activ, na.rm=TRUE, FUN=sum)
-#summary(stepsums)
 ```
 
 ## What is mean total number of steps taken per day?
@@ -47,7 +45,8 @@ main="Average number of Steps Taken at different Intervals")
 ![plot of chunk unnamed-chunk-5](./PA1_template_files/figure-html/unnamed-chunk-5.png) 
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-The 835 contains the maximum number of steps.
+
+The 835 interval contains the maximum number of steps.
 
 ## Imputing missing values
 
@@ -69,10 +68,9 @@ I want to fill NA'values by mean step numper of current day
 
 ```r
 step_day_mean <- aggregate(steps~date,data=activ,mean,na.action = na.pass)
-#step_day_mean$steps[is.na(step_day_mean$steps)] <- 0
 step_day_mean$steps <- as.integer(step_day_mean$steps)
-
 activ_imp <- merge(activ, step_day_mean, by="date")
+step_day_mean <-NULL
 activ_imp$steps.x[is.na(activ_imp$steps.x)] <- activ_imp$steps.y[is.na(activ_imp$steps.x)]
 activ_imp$steps.y<-NULL
 activ_imp <- activ_imp[c(2, 1, 3)]
@@ -99,6 +97,7 @@ The __MEDIAN__ total number of steps in improved dataset is 10765.
 As we can see, there are no significant changes between original and improved datasets.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Process dataset
 
 ```r
 activ_imp$days <- weekdays(as.Date(activ_imp$date), TRUE)
@@ -106,7 +105,7 @@ activ_imp$day_t <- ifelse(activ_imp$days == "Sat" | activ_imp$days == "Sun", "We
 activ_imp.stepmean <- aggregate(steps~interval+day_t,data=activ_imp,FUN=mean,na.rm=TRUE)
 ```
 
-## Loading required package: lattice and create plot.
+Loading required package: lattice and create plot.
 
 
 ```r
